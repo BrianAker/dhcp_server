@@ -33,6 +33,12 @@ authoritative;
 log-facility {{ dhcp_common_log_facility }};
 {% endif %}
 
+# rfc4833: Timezone Options for DHCP
+{% if dhcp_tz_posix_string is defined %}
+option tz-posix-string code 100 = string;
+option tz-posix-string "{{ dhcp_tz_posix_string }}";
+{% endif %}
+
 # Subnets
 {% for s in dhcp_subnets %}
 subnet {{ s.base }} netmask {{ s.netmask }} {
@@ -75,6 +81,9 @@ host {{ h.name }} {
 {% endif %}
 {% if h.domain_nameservers is defined %}
   option domain-name-servers {{ h.domain_nameservers }};
+{% endif %}
+{% if h.host_name is defined %}
+  option host-name "{{ h.host_name }}";
 {% endif %}
 {% if h.domain_name is defined %}
   option domain-name "{{ h.domain_name }}";

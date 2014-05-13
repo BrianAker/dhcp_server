@@ -25,6 +25,7 @@ DHCP server configuration.
     dhcp_common_ddns_update_style: none
     dhcp_common_authoritative: true
     dhcp_common_log_facility: local7
+    dhcp_tz_posix_string: UTC
 
     # Subnet configuration
     dhcp_subnets:
@@ -87,6 +88,7 @@ Examples
         dhcp_common_ddns_update_style: none
         dhcp_common_authoritative: true
         dhcp_common_log_facility: local7
+        dhcp_tz_posix_string: UTC
         dhcp_subnets:
         - base: 192.168.10.0
           netmask: 255.255.255.0
