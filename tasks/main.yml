@@ -15,6 +15,7 @@
 # Generate configuration
 - name: Generate dhcpd.conf 
   template: src=dhcpd.conf.j2 dest={{ dhcp_server_config }}
+            validate='dhcpd -t --no-pid -cf %s'
   notify:
     - restart dhcpd
 

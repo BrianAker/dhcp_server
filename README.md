@@ -87,6 +87,7 @@ Examples
         dhcp_common_max_lease_time: 7200
         dhcp_common_ddns_update_style: none
         dhcp_common_authoritative: true
+        dhcp_common_deny_duplicates: true
         dhcp_common_log_facility: local7
         dhcp_tz_posix_string: UTC
         dhcp_subnets:
