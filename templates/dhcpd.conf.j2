@@ -50,6 +50,38 @@ option tz-posix-string code 100 = string;
 option tz-posix-string "{{ dhcp_tz_posix_string }}";
 {% endif %}
 
+{% if dhcp_common_hosts is defined %}
+{% for dhcp_host in dhcp_common_hosts %}
+host {{ dhcp_host.name }} {
+  hardware ethernet {{ dhcp_host.mac_address }};
+{% if dhcp_host.fixed_address is defined %}
+  fixed-address {{ dhcp_host.fixed_address }};
+{% endif %}
+{% if dhcp_host.routers is defined %}
+  option routers {{ dhcp_host.routers }};
+{% endif %}
+{% if dhcp_host.broadcast_address is defined %}
+  option broadcast-address {{ dhcp_host.broadcast_address }};
+{% endif %}
+{% if dhcp_host.domain_nameservers is defined %}
+  option domain-name-servers {{ dhcp_host.domain_nameservers }};
+{% endif %}
+{% if dhcp_host.host_name is defined %}
+  option host-name "{{ dhcp_host.host_name }}";
+{% endif %}
+{% if dhcp_host.domain_name is defined %}
+  option domain-name "{{ dhcp_host.domain_name }}";
+{% endif %}
+{% if dhcp_host.default_lease_time is defined %}
+  default-lease-time {{ dhcp_host.default_lease_time }};
+{% endif %}
+{% if dhcp_host.max_lease_time is defined %}
+  max-lease-time {{ dhcp_host.max_lease_time }};
+{% endif %}
+}
+{% endfor %}
+{% endif %}
+
 # Subnets
 {% for s in dhcp_subnets %}
 subnet {{ s.base }} netmask {{ s.netmask }} {
@@ -73,37 +105,6 @@ subnet {{ s.base }} netmask {{ s.netmask }} {
 {% endif %}
 {% if s.max_lease_time is defined %}
   max-lease-time {{ s.max_lease_time }};
-{% endif %}
-}
-{% endfor %}
-
-# Hosts
-{% for h in dhcp_hosts %}
-host {{ h.name }} {
-  hardware ethernet {{ h.mac_address }};
-{% if h.fixed_address is defined %}
-  fixed-address {{ h.fixed_address }};
-{% endif %}
-{% if h.routers is defined %}
-  option routers {{ h.routers }};
-{% endif %}
-{% if h.broadcast_address is defined %}
-  option broadcast-address {{ h.broadcast_address }};
-{% endif %}
-{% if h.domain_nameservers is defined %}
-  option domain-name-servers {{ h.domain_nameservers }};
-{% endif %}
-{% if h.host_name is defined %}
-  option host-name "{{ h.host_name }}";
-{% endif %}
-{% if h.domain_name is defined %}
-  option domain-name "{{ h.domain_name }}";
-{% endif %}
-{% if h.default_lease_time is defined %}
-  default-lease-time {{ h.default_lease_time }};
-{% endif %}
-{% if h.max_lease_time is defined %}
-  max-lease-time {{ h.max_lease_time }};
 {% endif %}
 }
 {% endfor %}
@@ -141,8 +142,6 @@ shared-network {{ n.name }} {
 {% if s.max_lease_time is defined %}
     max-lease-time {{ s.max_lease_time }};
 {% endif %}
-  }
-{% endfor %}
 {% for p in n.pools %}
   pool {
     {{ p.rule }};
@@ -151,5 +150,55 @@ shared-network {{ n.name }} {
 {% endif %}
   }
 {% endfor %}
+  }
+{% endfor %}
 }
 {% endfor %}
+
+{% if dhcpd and dhcpd['groups'] is defined %}
+{% for group_ in dhcpd.groups %}
+{% if group_.name is defined %}
+# {{ group_.name }}
+{% endif %}
+group {
+{% if group_.domain is defined %}
+  option domain-name "{{ group_.domain }}";
+{% endif %}
+{% if group_.routers is defined %}
+  option routers {{ group_.routers }};
+{% endif %}
+{% if group_.hosts is defined %}
+{% for host_ in group_['hosts'] %}
+  host {{ host_.name }} {
+    hardware ethernet {{ host_.mac_address }};
+{% if host_.fixed_address is defined %}
+    fixed-address {{ host_.fixed_address }};
+{% endif %}
+{% if host_.routers is defined %}
+    option routers {{ host_.routers }};
+{% endif %}
+{% if host_.broadcast_address is defined %}
+    option broadcast-address {{ host_.broadcast_address }};
+{% endif %}
+{% if host_.domain_nameservers is defined %}
+    option domain-name-servers {{ host_.domain_nameservers }};
+{% endif %}
+{% if host_.host_name is defined %}
+    option host-name "{{ host_.host_name }}";
+{% endif %}
+{% if host_.domain_name is defined %}
+    option domain-name "{{ host_.domain_name }}";
+{% endif %}
+{% if host_.default_lease_time is defined %}
+    default-lease-time {{ host_.default_lease_time }};
+{% endif %}
+{% if host_.max_lease_time is defined %}
+    max-lease-time {{ host_.max_lease_time }};
+{% endif %}
+  }
+{% endfor %}
+{% endif %}
+}
+
+{% endfor %}
+{% endif %}
